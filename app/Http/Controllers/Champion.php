@@ -7,15 +7,22 @@ class Champion
     const CRIT = 1.4;
 
     public $name = null;
+    public $dmgBasic = 0;
+    public $dmgUltiPhysical = 0;
     public $dmgPhysical = 0;
+    public $dmgUltiMagic = 0;
     public $dmgMagic = 0;
     public $armorPhysical = 0;
     public $armorMagic = 0;
+    public $startTimeArmor = null;
+    public $armor = 0;
+    public $currentHealth = 0;
     public $health = 0;
     public $currentMana = 0;
     public $maxMana = 0;
     public $speed = 0;
     public $crit = 0;
+    public $suckBlood = 0;
     public $perDmgPhysical = 0;
     public $perDmgMagic = 0;
     public $perArmorPhysical = 0;
@@ -29,128 +36,48 @@ class Champion
     public $totalDamage = 0;
     public $timeOld = 0;
     public $damages = [];
-    public $time = 1;
+    public $timeAttack = 1;
     public $items = [];
+    public $mocDietTimes = 0;
+    public $startTimeGayQuaKho = null;
+    public $matNaTimes = 0;
 
     public function __construct($champion)
     {
-        $this->name = $champion->name;
-        $this->dmgPhysical = $champion->dmg_physical;
-        $this->dmgMagic = $champion->dmg_magic;
-        $this->armorPhysical = $champion->armor_physical;
-        $this->armorMagic = $champion->armor_magic;
-        $this->health = $champion->health;
-        $this->maxMana = $champion->mana;
-        $this->speed = $champion->speed;
-        $this->crit = $champion->crit;
-        $this->perDmgPhysical = $champion->per_dmg_physical;
-        $this->perDmgMagic = $champion->per_dmg_magic;
-        $this->perArmorPhysical = $champion->per_armor_physical;
-        $this->perArmorMagic = $champion->per_armor_magic;
-        $this->perHealth = $champion->per_health;
-        $this->perMana = $champion->per_mana;
-        $this->perSpeed = $champion->per_speed;
-        $this->perCrit = $champion->per_crit;
+        $this->name = $champion->name ?? '';
+        $this->dmgBasic = $champion->dmg_basic ?? 0;
+        $this->dmgUltiPhysical = $champion->dmg_ulti_physical ?? 0;
+        $this->dmgUltiMagic = $champion->dmg_ulti_magic ?? 0;
+        $this->armorPhysical = $champion->armor_physical ?? 0;
+        $this->armorMagic = $champion->armor_magic ?? 0;
+        $this->health = $champion->health ?? 0;
+        $this->maxMana = $champion->mana ?? 0;
+        $this->speed = $champion->speed ?? 0;
+        $this->crit = $champion->crit ?? 0;
+        $this->suckBlood = $champion->suck_blood ?? 0;
+        $this->perDmgPhysical = $champion->per_dmg_physical ?? 0;
+        $this->perDmgMagic = $champion->per_dmg_magic ?? 0;
+        $this->perArmorPhysical = $champion->per_armor_physical ?? 0;
+        $this->perArmorMagic = $champion->per_armor_magic ?? 0;
+        $this->perHealth = $champion->per_health ?? 0;
+        $this->perMana = $champion->per_mana ?? 0;
+        $this->perSpeed = $champion->per_speed ?? 0;
+        $this->perCrit = $champion->per_crit ?? 0;
     }
 
     public function initItem($items)
     {
         $this->items = $items;
         foreach ($items as $item) {
-            $this->dmgPhysical += $item->dmgPhysical;
-            $this->dmgMagic += $item->dmgMagic;
-            $this->armorPhysical += $item->armorPhysical;
-            $this->armorMagic += $item->armorMagic;
-            $this->health += $item->health;
-            $this->currentMana += $item->mana;
-            $this->speed += $item->speed;
-            $this->crit += $item->crit;
-            $this->perDmgPhysical += $item->perDmgPhysical;
             $this->perDmgMagic += $item->perDmgMagic;
-            $this->perArmorPhysical += $item->perArmorPhysical;
-            $this->perArmorMagic += $item->perArmorMagic;
-            $this->perHealth += $item->perHealth;
-            $this->perMana += $item->perMana;
-            $this->perSpeed += $item->perSpeed;
-            $this->perCrit += $item->perCrit;
         }
 
         return $this;
     }
 
-    public function attack($i)
+    public function ultiAnivia($time)
     {
-        /** @var Item $item */
-        foreach ($this->items as $item) {
-            switch ($item->name) {
-                case 'quyền trượng thiên thần':
-                    $item->quyenTruongThienThan($i, $this);
-                    break;
-                case 'găng bảo thạch':
-                    $item->gangBaoThach($i, $this);
-                    break;
-                case 'mũ phú thủy':
-                    $item->muPhuThuy($i, $this);
-                    break;
-            }
-        }
-
-        $speed = round(1 / $this->speed, 1) * 10;
-        if ($this->time % $speed == 0) {
-            $damage = $this->dmgPhysical;
-            $damage = $this->isCrit() ? $this->crit($damage) : $damage;
-
-            /** @var Item $item */
-            foreach ($this->items as $item) {
-                switch ($item->name) {
-                    case 'mũ phú thủy':
-                        $damage = $item->muPhuThuyKhuechDaiSatThuong($damage);
-                        break;
-                }
-            }
-
-            $damage = round($damage);
-            $this->damages[$i] = $damage;
-            $this->totalDamage += $damage;
-
-            $this->currentMana += 10;
-        }
-
-        $this->time++;
-    }
-
-    public function ulti($i)
-    {
-        $damageUlti = 0;
-        switch ($this->name) {
-            case 'Anivia':
-                $damageUlti = $this->ultiAnivia($i);
-                break;
-            default:
-                break;
-        }
-
-        /** @var Item $item */
-        foreach ($this->items as $item) {
-            switch ($item->name) {
-                case 'mũ phú thủy':
-                    $damageUlti = $item->muPhuThuyKhuechDaiSatThuong($damageUlti);
-                    break;
-            }
-        }
-
-        $damageUlti = round($damageUlti);
-        $this->damages[] = $damageUlti;
-        $this->currentMana -= $this->maxMana;
-
-        $this->totalDamage += $damageUlti;
-        $this->countUlti++;
-        $this->time = 1;
-    }
-
-    private function ultiAnivia($i)
-    {
-        $damageUlti = 325 * (1 + $this->perDmgMagic);
+        $damageUlti = $this->dmgUltiMagic * (1 + $this->perDmgMagic);
         $damageUlti = $this->isCrit() ? $this->crit($damageUlti) : $damageUlti;
 
         return $damageUlti;
@@ -165,6 +92,14 @@ class Champion
     {
         $damage *= self::CRIT;
         $this->countCrit++;
+
+        return $damage;
+    }
+
+    public function armorEnemy($enemy, $damage)
+    {
+        $armor = $enemy->armorMagic;
+        $damage = $damage * (1 - $armor / (100 + $armor));
 
         return $damage;
     }

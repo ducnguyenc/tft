@@ -3,18 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Champion;
-use App\Http\Controllers\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
+    const EACH_SECOND = 'each_second';
+    const EACH_ATTACK = 'each_attack';
+    const EACH_ULTI = 'each_ulti';
+
     public ?Champion $champion = null;
     public array $itemsChampion = [];
     public ?Champion $enemy = null;
     public array $itemsEnemy = [];
 
-    public $time = 0;
     public $duration = 12;
     public $times = 100;
 
@@ -27,10 +30,15 @@ class HomeController extends Controller
             $itemNamesEnemy = $request->input('itemsEnemy', []);
 
             for ($i = 0; $i < $this->times; $i++) {
-                $this->itemsChampion = $this->initItem($itemNamesChampion);
+                $this->itemsChampion = $this->initItems($itemNamesChampion);
                 $this->champion = $this->initChampion($championName)->initItem($this->itemsChampion);
-                $this->itemsEnemy = $this->initItem($itemNamesEnemy);
-                $this->enemy = $this->initChampion($enemyName)->initItem($this->itemsEnemy);
+                // $this->enemy = $this->initChampion($enemyName)->initItem($itemNamesEnemy);
+                $this->enemy = new Champion((object)[
+                    'name' => 'enemy',
+                    'health' => 4000,
+                    'armor_physical' => 105,
+                    'armor_magic' => 105,
+                ]);
 
                 $this->battle();
 
@@ -68,12 +76,11 @@ class HomeController extends Controller
         return new Champion($champion);
     }
 
-    private function initItem($itemNames)
+    private function initItems($itemNames)
     {
         $items = [];
-        foreach ($itemNames as $item) {
-            $item = DB::table('items')->where('name', $item)->first();
-            $items[] = new Item($item);
+        foreach ($itemNames as $itemName) {
+            $items[] = new Item($itemName);
         }
 
         return $items;
@@ -82,11 +89,71 @@ class HomeController extends Controller
     private function battle()
     {
         $duration = $this->duration * 10;
-        for ($i = 1; $i < $duration; $i++) {
-            $this->champion->attack($i);
+        for ($time = 1; $time < $duration; $time++) {
+            $this->useItem($time, self::EACH_SECOND);
+
+            $this->attack($time);
             if ($this->champion->currentMana >= $this->champion->maxMana) {
-                $this->champion->ulti($i);
+                $this->ulti($time);
             }
+        }
+    }
+
+    public function attack($time)
+    {
+        $speed = round(1 / $this->champion->speed, 1) * 10;
+        if ($this->champion->timeAttack % $speed == 0) {
+            $this->useItem($time, self::EACH_ATTACK);
+
+            $damage = $this->champion->dmgBasic;
+            $damage = $this->champion->isCrit() ? $this->champion->crit($damage) : $damage;
+
+            $damage = $this->champion->armorEnemy($this->enemy, $damage);
+
+            $damage = round($damage);
+            $this->champion->damages[$time] = $damage;
+            $this->champion->totalDamage += $damage;
+
+            $this->champion->currentMana += 10;
+        }
+
+        $this->champion->timeAttack++;
+    }
+
+    public function ulti($time)
+    {
+        $this->useItem($time, self::EACH_ULTI);
+
+        $damageUlti = 0;
+        switch ($this->champion->name) {
+            case 'Anivia':
+                $damageUlti = $this->champion->ultiAnivia($time);
+                break;
+            default:
+                break;
+        }
+
+        $damageUlti = $this->champion->armorEnemy($this->enemy, $damageUlti);
+
+        $damageUlti = round($damageUlti);
+        $this->champion->damages[] = $damageUlti;
+        $this->champion->currentMana -= $this->champion->maxMana;
+
+        $this->champion->totalDamage += $damageUlti;
+        $this->champion->countUlti++;
+        $this->champion->timeAttack = 1;
+    }
+
+    private function useItem($time, $type)
+    {
+        /** @var Item $item */
+        foreach ($this->champion->items as $item) {
+            $item->{Str::camel(Str::ascii($item->name))}($this->champion, $time, $type);
+        }
+
+        /** @var Item $item */
+        foreach ($this->enemy->items as $item) {
+            $item->{Str::camel(Str::ascii($item->name))}($this->enemy, $time, $type);
         }
     }
 }
