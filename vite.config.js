@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
+import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
     plugins: [
@@ -9,5 +10,25 @@ export default defineConfig({
             refresh: true,
         }),
         tailwindcss(),
+        vue(),
     ],
+    resolve: {
+        alias: {
+            'vue': 'vue/dist/vue.esm-bundler.js',
+        },
+    },
+    define: {
+        __VUE_OPTIONS_API__: true,
+        __VUE_PROD_DEVTOOLS__: false,
+        __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
+    },
+    server: {
+        host: '0.0.0.0',   // cho phép truy cập từ LAN hoặc Docker
+        port: 5173,        // đổi port tùy bạn
+        strictPort: true,  // bắt buộc dùng đúng port, không tự tăng
+        hmr: {
+            host: 'localhost',
+            port: 5173,    // HMR port
+        },
+    }
 });

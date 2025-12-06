@@ -23,6 +23,15 @@ class HomeController extends Controller
 
     public function index(Request $request)
     {
+        $items = [
+            'quyenTruongThienThan' => 'quyenTruongThienThan',
+            'blue' => 'blue',
+            'cuongDaoGuinsoo' => 'cuongDaoGuinsoo',
+            'muPhuThuy' => 'muPhuThuy',
+            'kiemShojin' => 'kiemShojin',
+            'nanhNashor' => 'nanhNashor',
+        ];
+
         try {
             $championName = $request->input('champion');
             $itemNamesChampion = $request->input('itemsChampion', []);

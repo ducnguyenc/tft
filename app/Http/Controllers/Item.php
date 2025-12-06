@@ -7,71 +7,193 @@ class Item
     public $name = null;
     public $perDmgMagic = 0;
 
-    public function __construct($item) {}
+    // public function muThichNghi(?Champion &$champion = null, $time = null)
+    // {
+    //     if ($time % 10 == 0) {
+    //         $champion->currentMana += 3;
+    //     }
+    // }
 
     public function quyenTruongThienThan(?Champion &$champion = null, $time = null)
     {
+        if ($time == 1) {
+            $champion->perDmgMagic += 0.3;
+        }
+
+        if ($time % 10 == 0) {
+            $champion->currentMana += 1;
+        }
+
         if ($time % 50 == 0) {
             $champion->perDmgMagic += 0.2;
         }
+    }
 
-        if ($time % 10 == 0) {
-            $champion->currentMana += 1;
+    // public function huyetKiem(?Champion &$champion = null, $time = null)
+    // {
+    //     if ($champion->currentHealth / $champion->health <= 0.4 && !isset($champion->startTimeArmor)) {
+    //         $champion->startTimeArmor = $time;
+    //         $champion->armor = $champion->health * 0.25;
+    //     }
+
+    //     if ($champion->startTimeArmor !== null && $time - $champion->startTimeArmor >= 50) {
+    //         $champion->armor = 0;
+    //         $champion->startTimeArmor = -1;
+    //     }
+    // }
+
+    // public function giapmau(?Champion &$champion = null, $time = null)
+    // {
+    //     if ($time == 1) {
+    //         $champion->perHealth += 0.15;
+    //     }
+    // }
+
+    public function blue(?Champion &$champion = null, $time = null)
+    {
+        if ($time == 1) {
+            $champion->perDmgPhysical += 0.15;
+            $champion->perDmgMagic += 0.15;
+            $champion->perDmgPhysicalFinal += 0.1;
+            $champion->perDmgMagicFinal += 0.1;
         }
-    }
 
-    public function muPhuThuyKhuechDaiSatThuong($damage)
-    {
-        return $damage * 1.1;
-    }
-
-    public function quyThuMorello(?Champion &$champion = null, $time = null)
-    {
         if ($time % 10 == 0) {
-            $champion->currentMana += 1;
+            $champion->currentMana += 5;
         }
     }
 
     public function cuongDaoGuinsoo(?Champion &$champion = null, $time = null)
     {
+        if ($time == 1) {
+            $champion->perDmgPhysical += 0.1;
+            $champion->perDmgMagic += 0.1;
+        }
+
         if ($time % 10 == 0) {
             $champion->speed *= 1.07;
         }
     }
 
-    public function huyetKiem(?Champion &$champion = null, $time = null)
+    public function gangbaothach(?Champion &$champion = null, $time = null)
     {
-        if ($champion->currentHealth / $champion->health <= 0.4 && !isset($champion->startTimeArmor)) {
-            $champion->startTimeArmor = $time;
-            $champion->armor = $champion->health * 0.25;
-        }
-
-        if ($champion->startTimeArmor !== null && $time - $champion->startTimeArmor >= 50) {
-            $champion->armor = 0;
-            $champion->startTimeArmor = -1;
+        if ($time == 1) {
+            $champion->perDmgMagic += 0.35;
+            $champion->perCrit += 0.35;
+            $champion->perCrit += 0.1;
         }
     }
 
-    public function banTayCongLy(?Champion &$champion = null, $time = null)
+    public function nanhNashor(?Champion &$champion = null, $time = null)
     {
-        if ($champion->currentHealth / $champion->health > 0.5) {
-            // TODO
-        } else {
-            // TODO
+        if ($time == 1) {
+            $champion->perDmgMagic += 0.15;
+            $champion->perSpeed += 0.1;
+            $champion->perCrit += 0.2;
+            $champion->perHealth += 0.15;
+        }
+
+        if ($time > 1) {
+            $champion->currentMana += 3;
+        }
+    }
+
+    public function muPhuThuy(?Champion &$champion = null, $time = null)
+    {
+        if ($time == 1) {
+            $champion->perDmgMagic += 0.5;
+            $champion->amplification += 0.15;
         }
     }
 
     public function kiemShojin(?Champion &$champion = null, $time = null)
     {
+        if ($time == 1) {
+            $champion->perDmgPhysical += 0.15;
+            $champion->perDmgMagic += 0.15;
+        }
 
         if ($time % 10 == 0) {
             $champion->currentMana += 1;
         }
 
-        if ($time > 0) {
+        if ($time > 1) {
             $champion->currentMana += 5;
         }
     }
+
+    // public function gang(?Champion &$champion = null, $time = null)
+    // {
+    //     if ($champion->currentHealth / $champion->health <= 0.6) {
+    //         $champion->startTimeArmor = $time;
+    //         $champion->armor = $champion->health * 0.5;
+    //     }
+
+    //     if ($champion->startTimeArmor !== null && $time - $champion->startTimeArmor >= 50) {
+    //         $champion->armor = 0;
+    //         $champion->startTimeArmor = -1;
+    //     }
+    // }
+
+    // public function giapGai(?Champion &$champion = null, $time = null)
+    // {
+    //     if ($time == 1) {
+    //         $champion->perHealth += 0.09;
+    //     }
+
+    //     if ($time % 10 == 0) {
+    //         $champion->damageReduce += 0.05;
+    //     }
+    // }
+
+    // public function deathblade(?Champion &$champion = null, $time = null)
+    // {
+    //     if ($time == 1) {
+    //         $champion->amplification += 0.1;
+    //     }
+    // }
+
+    // public function vuotRong(?Champion &$champion = null, $time = null)
+    // {
+    //     if ($time == 1) {
+    //         $champion->perHealth += 0.09;
+    //     }
+
+    //     if ($time % 20 == 0) {
+    //         $champion->currentHealth += ($champion->health * 0.02);
+    //     }
+    // }
+
+    // public function thuTuong(?Champion &$champion = null, $time = null)
+    // {
+    //     if ($time == 1) {
+    //         $champion->armorPhysical += 0.8;
+    //         $champion->armorMagic += 0.8;
+    //     }
+    // }
+
+    // public function dietKhongLo(?Champion &$champion = null, $time = null)
+    // {
+    //     if ($time % 10 == 0) {
+    //         $champion->currentMana += 1;
+    //     }
+    // }
+
+    // public function quyThuMorello(?Champion &$champion = null, $time = null)
+    // {
+    //     if ($time % 10 == 0) {
+    //         $champion->currentMana += 1;
+    //     }
+    // }
+
+    // public function banTayCongLy(?Champion &$champion = null, $time = null)
+    // {
+    //     if ($champion->currentHealth / $champion->health > 0.5) {
+    //         // TODO
+    //     } else {
+    //         // TODO
+    //     }
+    // }
 
     public function giapTamLinh(?Champion &$champion = null, $time = null)
     {
@@ -79,18 +201,6 @@ class Item
             $champion->currentMana += 2;
             $champion->currentHealth += (($champion->health * $champion->currentHealth) * 0.025);
         }
-    }
-
-    public function dietKhongLo(?Champion &$champion = null, $time = null)
-    {
-        if ($time % 10 == 0) {
-            $champion->currentMana += 1;
-        }
-    }
-
-    public function dietKhongLoKhuechDaiSatThuong($damage)
-    {
-        return $damage * 1.15 * 1.15;
     }
 
     public function giapLua(?Champion &$champion = null, $time = null)
@@ -131,26 +241,6 @@ class Item
         }
     }
 
-    public function gang(?Champion &$champion = null, $time = null)
-    {
-        if ($champion->currentHealth / $champion->health <= 0.6) {
-            $champion->startTimeArmor = $time;
-            $champion->armor = $champion->health * 0.5;
-        }
-
-        if ($champion->startTimeArmor !== null && $time - $champion->startTimeArmor >= 50) {
-            $champion->armor = 0;
-            $champion->startTimeArmor = -1;
-        }
-    }
-
-    public function blue(?Champion &$champion = null, $time = null)
-    {
-        if ($time % 10 == 0) {
-            $champion->currentMana += 5;
-        }
-    }
-
     public function mocDiet(?Champion &$champion = null, $time = null)
     {
         if ($time % 10 == 0) {
@@ -183,18 +273,6 @@ class Item
         // }
     }
 
-    public function nanhNashor(?Champion &$champion = null, $time = null)
-    {
-        $champion->currentMana += 3;
-    }
-
-    public function muThichNghi(?Champion &$champion = null, $time = null)
-    {
-        if ($time % 10 == 0) {
-            $champion->currentMana += 3;
-        }
-    }
-
     public function giapBang(?Champion &$champion = null, $time = null)
     {
         if ($time % 10 == 0) {
@@ -207,12 +285,7 @@ class Item
         }
     }
 
-    public function giapGai(?Champion &$champion = null, $time = null)
-    {
-        if ($time % 10 == 0) {
-            $champion->currentMana += 1;
-        }
-    }
+
 
     public function giapGaiDamage($damage)
     {
@@ -235,22 +308,10 @@ class Item
         return $damage * (1 - 0.18);
     }
 
-    public function vuotRauQua(?Champion &$champion = null, $time = null)
-    {
-        if ($time % 20 == 0) {
-            $champion->currentHealth += ($champion->health * 0.02);
-        }
-    }
-
     public function kiemHextech(?Champion &$champion = null, $time = null)
     {
         if ($time % 10 == 0) {
             $champion->currentMana += 1;
         }
-    }
-
-    public function deathbladeKhuechDaiSatThuong($damage)
-    {
-        return $damage * (1 + 0.1);
     }
 }

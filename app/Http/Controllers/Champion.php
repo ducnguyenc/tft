@@ -41,6 +41,10 @@ class Champion
     public $mocDietTimes = 0;
     public $startTimeGayQuaKho = null;
     public $matNaTimes = 0;
+    public $damageReduce = 0;
+    public $amplification = 0;
+    public $perDmgPhysicalFinal = 0;
+    public $perDmgMagicFinal = 0;
 
     public function __construct($champion)
     {
