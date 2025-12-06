@@ -165,6 +165,34 @@ LOCK TABLES `failed_jobs` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `hes`
+--
+
+DROP TABLE IF EXISTS `hes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hes` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `he` varchar(45) DEFAULT NULL,
+  `dong` varchar(45) DEFAULT NULL,
+  `bac` varchar(45) DEFAULT NULL,
+  `vang` varchar(45) DEFAULT NULL,
+  `kimcuong` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hes`
+--
+
+LOCK TABLES `hes` WRITE;
+/*!40000 ALTER TABLE `hes` DISABLE KEYS */;
+INSERT INTO `hes` VALUES (1,'Bilgewater','3','5','7','10'),(2,'Chinh Phạt\n','2','3','4','5'),(3,'Cảnh Vệ','2','3','4','5'),(4,'Cực Tốc','2','3','4','5'),(5,'Darkin','1','2','3',NULL),(6,'Demacia','3','5','7','11'),(7,'Dũng Sĩ','2','4','6',NULL),(8,'Freljord','3','5','7',NULL),(9,'Hư Không','2','4','6','9'),(10,'Ionia','3','5','7','10'),(11,'Ixtal','3','5','7',NULL),(12,'Nhiễu Loạn','2',NULL,'4',NULL),(13,'Noxus','3','5','7','10'),(14,'Pháp Sư\n','2','4','6',NULL),(15,'Piltover','2','4','6',NULL),(16,'Shurima','2',NULL,'3','4'),(17,'Thuật Sĩ','2',NULL,'4',NULL),(18,'Viễn Kích','2','3','4','5'),(19,'Vệ Quân','2','4','6',NULL),(20,'Xạ Thủ','2',NULL,'4',NULL),(21,'Yordle','2','4','8','10'),(22,'Zaun','3','5','7',NULL),(23,'Đảo Bóng Đêm','2','3','4','5'),(24,'Đấu Sĩ','2','4','6',NULL),(25,'Đồ Tể','2','4','6',NULL);
+/*!40000 ALTER TABLE `hes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `items`
 --
 
@@ -388,4 +416,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-12-06 15:02:22
+-- Dump completed on 2025-12-06 15:41:11
