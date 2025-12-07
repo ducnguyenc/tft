@@ -7,14 +7,40 @@ use Illuminate\Support\Facades\Log;
 
 class MatchController extends Controller
 {
+    public function setPrice($champion, $type)
+    {
+        if ($type == 'champion1') {
+            return $this->checkPriceGte($champion, 5);
+        }
+        if ($type == 'champion2') {
+            return $this->checkPriceGte($champion, 5);
+        }
+        if ($type == 'champion3') {
+            return $this->checkPriceGte($champion, 5);
+        }
+        if ($type == 'champion4') {
+            return $this->checkPriceGte($champion, 5);
+        }
+        if ($type == 'champion5') {
+            return $this->checkPriceGte($champion, 5);
+        }
+        if ($type == 'champion6') {
+            return $this->checkPriceLte($champion, 4);
+        }
+        if ($type == 'champion7') {
+            return $this->checkPriceLte($champion, 4);
+        }
+    }
 
     public function index()
     {
         set_time_limit(0);
 
         try {
-            $champions = DB::table('champion_hes')->whereNotIn('name', ['Baron Nashor', 'Aurelion Sol', 'Ryze', 'Zaahen'])
-                // ->whereIn('name', ['Ornn', 'Shyvana', 'Tahm Kench', 'Ngộ Không', 'Nautilus', 'Lucian & Senna', 'Miss Fortune'])
+            $champions = DB::table('champion_hes')
+                ->whereNotIn('name', ['Baron Nashor', 'Aurelion Sol', 'Ryze', 'Zaahen', 'Brock', 'T-Hex', 'Galio', 'Nidalee', 'Skarner', 'Tahm Kench', 'Thresh', 'Xerath'])
+                // ->where('price', '>=', 5)
+                // ->whereIn('name', ['Sylas', 'Gau', 'Azir', 'Mel', 'Ornn', 'Thresh', 'Xerath'])
                 ->where('price', '>=', 3)
                 ->get();
             $heDB = DB::table('hes')->get();
@@ -24,54 +50,54 @@ class MatchController extends Controller
             $i = 0;
             // 1
             foreach ($champions as $champion1) {
-                if (!$this->checkPrice($champion1, 5)) {
+                if (!$this->setPrice($champion1, 'champion1')) {
                     break;
                 }
                 $champion2s = collect($champions)->where('id', '>', $champion1->id)->values();
 
                 //2
                 foreach ($champion2s as $champion2) {
-                    if (!$this->checkPrice($champion2, 5)) {
+                    if (!$this->setPrice($champion2, 'champion2')) {
                         continue;
                     }
                     $champion3s = collect($champions)->where('id', '>', $champion2->id)->values();
 
                     //3
                     foreach ($champion3s as $champion3) {
-                        if (!$this->checkPrice($champion3, 5)) {
+                        if (!$this->setPrice($champion3, 'champion3')) {
                             continue;
                         }
                         $champion4s = collect($champions)->where('id', '>', $champion3->id)->values();
 
                         //4
                         foreach ($champion4s as $champion4) {
-                            if (!$this->checkPrice($champion4, 5)) {
+                            if (!$this->setPrice($champion4, 'champion4')) {
                                 continue;
                             }
 
-                            Log::info($i . ' - ' . $champion1->name . ' - ' . $champion2->name . ' - ' . $champion3->name . ' - ' . $champion4->name);
+                            // Log::info($i . ' - ' . $champion1->name . ' - ' . $champion2->name . ' - ' . $champion3->name . ' - ' . $champion4->name);
                             $champion5s = collect($champions)->where('id', '>', $champion4->id)->values();
 
                             //5
                             foreach ($champion5s as $champion5) {
-                                if (!$this->checkPriceE($champion5, 4)) {
+                                if (!$this->setPrice($champion5, 'champion5')) {
                                     continue;
                                 }
                                 $champion6s = collect($champions)->where('id', '>', $champion5->id)->values();
 
                                 //6
                                 foreach ($champion6s as $champion6) {
-                                    if (!$this->checkPriceE($champion6, 4)) {
+                                    if (!$this->setPrice($champion6, 'champion6')) {
                                         continue;
                                     }
                                     $champion7s = collect($champions)->where('id', '>', $champion6->id)->values();
 
                                     //7
                                     foreach ($champion7s as $champion7) {
-                                        $i++;
-                                        if (!$this->checkPriceE($champion7, price: 3)) {
+                                        if (!$this->setPrice($champion7, 'champion7')) {
                                             continue;
                                         }
+                                        $i++;
                                         // $champion8s = collect($champions)->where('id', '>', $champion7->id)->values();
 
                                         // //8
@@ -89,8 +115,16 @@ class MatchController extends Controller
 
                                         $isMatch = $this->matchAll($matchs, $heDB);
                                         if ($isMatch) {
-                                            Log::info('done: ' . $i++ . ' - ' . $champion1->name . ' - ' . $champion2->name . ' - ' . $champion3->name . ' - ' . $champion4->name . ' - ' . $champion5->name . ' - ' . $champion6->name . ' - ' . $champion7->name);
-                                            // luu db
+                                            DB::table('matchs')->insert([
+                                                'name' => json_encode($matchs['name']),
+                                                'he' => json_encode($matchs['he']),
+                                                'kick_he' => json_encode($matchs['kick_he']),
+                                                'bac' => json_encode($matchs['bac']),
+                                                'bac_he_ko_he' => json_encode($matchs['bac_he_ko_he']),
+                                                'vang' => json_encode($matchs['vang']),
+                                                'price' => $matchs['price'],
+                                                'price1' => $matchs['price1'],
+                                            ]);
                                         }
 
                                         array_pop($championList);
@@ -117,6 +151,8 @@ class MatchController extends Controller
         } catch (\Throwable $th) {
             dd($th);
         }
+
+        Log::info('doneeeeeeeeeeeee: ');
     }
 
     public function getMatchs($championList)
@@ -234,6 +270,7 @@ class MatchController extends Controller
             }
 
             $matchs['he'][$he] = $heTmp;
+            $matchs['he'] = collect($matchs['he'])->values()->toArray();
             $matchs['bac'][$heTmp['bac']]++;
             $heTmp = [];
         }
@@ -256,14 +293,10 @@ class MatchController extends Controller
             return false;
         }
 
-        if ((($matchs['vang'][7] ?? 0) + ($matchs['vang'][5] ?? 0)) < 2 && ($matchs['vang'][4] ?? 0) < 2) {
-            return false;
-        }
-
         return true;
     }
 
-    public function checkPrice($champion, $price)
+    public function checkPriceGte($champion, $price)
     {
         if ($champion->price >= $price) {
             return true;
@@ -272,9 +305,18 @@ class MatchController extends Controller
         return false;
     }
 
-    public function checkPriceE($champion, $price)
+    public function checkPriceEq($champion, $price)
     {
         if ($champion->price == $price) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function checkPriceLte($champion, $price)
+    {
+        if ($champion->price <= $price) {
             return true;
         }
 
